@@ -1,6 +1,8 @@
 <?php
 
 use App\Post;
+use App\User;
+
 /*
 |--------------------------------------------------------------------------
 | Application Routes
@@ -25,6 +27,8 @@ Route::get('/post/{id}', function ($id) {
 | DATABASE RAW SQL QUERIES
 |--------------------------------------------------------------------------
 */
+
+/*
 Route::get('/insert', function () {
     DB::insert('insert into posts (title, content) values(?,?)' , ['No sleep','Cause learning Laravel']);
 });
@@ -49,7 +53,7 @@ Route::get('/delete', function () {
 
 });
 
-
+*/
 
 /*
 |--------------------------------------------------------------------------
@@ -101,4 +105,76 @@ Route::get('/basicupdate' , function () {
     $post->title = 'New Eloquent title';
     $post->content = 'Laravel made it so easy!';
     $post->save();
+});
+
+//Creating data and configuring mass assignment
+Route::get('/create' , function () {
+    Post::create(['title'=>'hi i\'m new title' ,'content'=>'and here\'s the new content' ]);
+});
+
+Route::get('/update' , function () {
+    //Post::where('id',6)->where('is_admin',0)->update(['title'=>'hi i\'m updated title' ,'content'=>'and here\'s the updated content' ]);
+    Post::where('id',6)->update(['title'=>'hi i\'m updated title' ,'content'=>'and here\'s the updated content' ]);
+});
+
+Route::get('/delete' , function () {
+    $post = Post::find(4);
+    $post->delete();
+    //or
+
+    Post::destroy([4,5]);
+});
+
+Route::get('/delete2' , function () {
+    Post::where('id',4)->delete();
+});
+
+Route::get('/softdelete' , function () {
+ Post::find(1)->delete();
+});
+
+Route::get('/readsoftdelete' , function () {
+    $posts = Post::withTrashed()->where('id',1)->get();
+    return $posts;
+});
+
+Route::get('/readonlysoftdelete' , function () {
+    $posts = Post::onlyTrashed()->where('id',1)->get();
+    return $posts;
+});
+
+Route::get('/restore' , function () {
+    Post::onlyTrashed()->where('id',1)->restore();
+});
+
+//delete permanently
+Route::get('/forcedelete' , function () {
+    Post::withTrashed()->where('id',7)->forceDelete();
+});
+
+/*
+|--------------------------------------------------------------------------
+| ELOQUENT RELATIONSHIPS
+|--------------------------------------------------------------------------
+*/
+
+//One to one relationship
+Route::get('/user/{id}/post' , function($id) {
+    return User::find($id)->post;
+});
+
+//the field user_id in posts and id in users should exist otherwise it will give an Error!
+//Inverse relationship
+Route::get('/post/{id}/user' , function($id) {
+    return post::find($id)->user->name;
+});
+
+//One to many
+Route::get('/posts' , function() {
+    $user = User::find(1);
+
+    foreach ($user->posts as $post)
+    {
+    echo $post->title.'<br>';
+    }
 });
