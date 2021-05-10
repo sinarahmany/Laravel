@@ -1,7 +1,9 @@
 <?php
 
+use App\Country;
 use App\Post;
 use App\User;
+use App\Role;
 
 /*
 |--------------------------------------------------------------------------
@@ -175,6 +177,33 @@ Route::get('/posts' , function() {
 
     foreach ($user->posts as $post)
     {
-    echo $post->title.'<br>';
+    echo $post->title."<br>";
     }
 });
+
+//Many to many
+Route::get('user/{id}/role' , function ($id){
+    $user = User::find($id)->roles()->orderBy('id','desc')->get();
+    return $user;
+
+});
+
+//accessing intermediate table /Pivot
+Route::get('user/pivot' , function (){
+    $user = User::find(1);
+    foreach ($user->roles as $role)
+    {
+        echo $role->pivot->created_at;
+    }
+
+});
+
+Route::get('user/country' , function (){
+    $country = Country::find(1);
+    foreach ($country->posts as $post){
+        return $post->title;
+    }
+
+});
+
+//Polymorphic relations
