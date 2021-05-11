@@ -4,6 +4,10 @@ use App\Country;
 use App\Post;
 use App\User;
 use App\Role;
+use App\Photo;
+use App\Tag;
+use App\Video;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -16,13 +20,13 @@ use App\Role;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
-Route::get('/post/{id}', function ($id) {
-    return "this is post number" . $id;
-});
+//Route::get('/', function () {
+//    return view('welcome');
+//});
+//
+//Route::get('/post/{id}', function ($id) {
+//    return "this is post number" . $id;
+//});
 
 /*
 |--------------------------------------------------------------------------
@@ -207,3 +211,41 @@ Route::get('user/country' , function (){
 });
 
 //Polymorphic relations
+Route::get('user/photos' , function (){
+    $user = User::find(2);
+    foreach ($user->photos as $photo){
+        return $photo->path;
+    }
+
+});
+
+Route::get('posts/photos' , function (){
+    $post = Post::find(2);
+    foreach ($post->photos as $photo){
+        return $photo;
+    }
+
+});
+
+Route::get('/photo/posts' , function (){
+    $photo = Photo::find(2);
+    return $photo->imageable;
+
+});
+
+//Polymorphic Many to many
+Route::get('/video/tag' , function (){
+    $video = Video::find(1);
+    foreach ($video->tags as $tag){
+        return $tag->name;
+    }
+
+});
+
+Route::get('/tag/video' , function (){
+    $tag = Tag::find(1);
+    foreach ($tag->videos as $video){
+        echo $video->name;
+    }
+
+});
